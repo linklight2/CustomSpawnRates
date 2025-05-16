@@ -27,6 +27,9 @@ namespace CustomSpawnRates
         [DefaultValue(CustomSpawnRates.DefaultDisableOnBoss)]
         public bool DisableOnBoss;
 
+        [DefaultValue(false)]
+        public bool DebugMode;
+
         public override ConfigScope Mode => ConfigScope.ServerSide;
 
         public override bool AcceptClientChanges(ModConfig pendingConfig, int whoAmI, ref NetworkText message)

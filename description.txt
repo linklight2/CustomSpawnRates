@@ -1,3 +1,3 @@
 Custom Spawn Rates is a simple mod that lets you customize spawn rates of enemies.
-Complete with a config that allows you to freely manipulate general spawn rates by raising, lowering and limiting the max spawns avaliable. 
+Complete with a config that allows you to freely manipulate general spawn rates by raising, lowering and limiting the max spawns available. 
 The spawn rate is not modified at all if the mod isn't in use either, perfect for those who only want to change the spawn rates in certain scenarios.

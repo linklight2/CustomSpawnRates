@@ -35,5 +35,10 @@ Configs: {
 				This only applies during calculation; it will not be used if "Max Spawns" is set to a value.
 				'''
 		}
+
+		DebugMode: {
+			Label: Debug Mode
+			Tooltip: ""
+		}
 	}
 }

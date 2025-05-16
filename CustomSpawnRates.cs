@@ -1,5 +1,6 @@
 using System;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 
 namespace CustomSpawnRates
@@ -16,30 +17,63 @@ namespace CustomSpawnRates
 
     public class GeneralSpawnRateMultiplier : GlobalNPC
     {
-        public bool IsBossActive()
+        public static int bossActive = 0;
+        public static int npcActive = 0;
+        public override void OnSpawn(NPC npc, IEntitySource source)
         {
-            bool active = false;
+            if (Main.netMode != Terraria.ID.NetmodeID.Server)
+                return;
 
-            foreach (NPC npc in Main.npc)
+            npcActive++;
+            if (npc.boss)
+                bossActive++;
+        }
+
+        public override void OnKill(NPC npc)
+        {
+            if (Main.netMode != Terraria.ID.NetmodeID.Server)
+                return;
+
+            npcActive--;
+            if (npc.boss)
+                bossActive--;
+
+            // Only Debug code from this point onwards
+            if (!ModContent.GetInstance<SpawnRatesConfig>().DebugMode)
+                return;
+
+            int currentBossActiveCount = 0;
+            int currentNpcActiveCount = 0;
+
+            foreach (NPC activeNpc in Main.ActiveNPCs)
             {
-                if (!npc.active)
-                    continue;
-
-                if (npc.boss)
-                {
-                    active = true;
-                    break;
-                }
+                currentBossActiveCount++;
+                if (activeNpc.boss)
+                    currentBossActiveCount++;
             }
 
-            return active;
+            if (currentBossActiveCount != bossActive)
+            {
+                Main.NewText("bossActive != currentBossActiveCount.", Microsoft.Xna.Framework.Color.Red);
+                bossActive = currentBossActiveCount;
+            }
+
+            if (currentNpcActiveCount != npcActive)
+            {
+                Main.NewText("bossActive != currentBossActiveCount.", Microsoft.Xna.Framework.Color.White);
+                npcActive = currentNpcActiveCount;
+            }
+        }
+        public bool IsBossActive()
+        {
+            return bossActive > 0;
         }
         public override void EditSpawnRate(Player player, ref int spawnRate, ref int maxSpawns)
         {
             SpawnRatesConfig config = ModContent.GetInstance<SpawnRatesConfig>();
 
             // If the User is not actively using the mod, disable it
-            // Changed math formulas to leave the spawn rate completely unmodified if at default values,
+            // Changed math formulas to leave the spawn rate and max spawns unmodified if at default values,
             // So this if statement is not needed for now.
             /*
             if (config.SpawnRateMultiplier == CustomSpawnRates.DefaultSpawnRateMultiplier && 
