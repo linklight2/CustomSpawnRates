@@ -6,7 +6,7 @@ and by limiting the max spawns avaliable. The spawn rate is not modified at all 
 perfect for those who only want to change the spawn rates in certain scenarios.
 
 [h2] Github [h2]
-You can find the source code on github: www.gith
+You can find the source code on github: https://github.com/linklight2/CustomSpawnRates.git
 
 [h2] Possible Future Mod Additions (according to popular demand): [h2]
 - Boosting the spawn rates of only NPCs above a certain rarity
