@@ -1,0 +1,39 @@
+Configs: {
+	SpawnRatesConfig: {
+		DisplayName: Spawn Rates Config
+
+		SpawnRateMultiplier: {
+			Tooltip: Multiplies the current spawn rate by X amount.
+			Label: Spawn Rate Multiplier
+		}
+
+		SpawnRateDivisor: {
+			Tooltip: Divides the current spawn rate by X amount.
+			Label: Spawn Rate Divisor
+		}
+
+		DisableOnBoss: {
+			Tooltip: Turn on to disable this config during a boss fight.
+			Label: Disable On Boss?
+		}
+
+		MaxSpawns: {
+			Label: Max Spawns
+			Tooltip:
+				'''
+				Sets the max amount of spawns around each player. 
+				Set this if you want to limit the max spawns to a hard value rather than have it calculated.
+				'''
+		}
+
+		SpawnMaxMult: {
+			Label: Max Spawns Multiplier
+			Tooltip:
+				'''
+				This value is used to better control the max amount of spawns near the player.
+				The max spawns will be calculated like so: OriginalMaxSpawns * SpawnRate * MaxSpawnsMultiplier
+				This only applies during calculation; it will not be used if "Max Spawns" is set to a value.
+				'''
+		}
+	}
+}

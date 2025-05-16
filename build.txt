@@ -1,0 +1,3 @@
+displayName = Custom Spawn Rates
+author = Linklight2
+version = 1.0
