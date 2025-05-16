@@ -5,10 +5,10 @@ Complete with a config that allows you to freely manipulate general spawn rates 
 and by limiting the max spawns avaliable. The spawn rate is not modified at all if the mod isn't in use either, 
 perfect for those who only want to change the spawn rates in certain scenarios.
 
-[h2] Github [h2]
+[h2] Github [/h2]
 You can find the source code on github: https://github.com/linklight2/CustomSpawnRates.git
 
-[h2] Possible Future Mod Additions (according to popular demand): [h2]
+[h2] Possible Future Mod Additions (according to popular demand): [/h2]
 - Boosting the spawn rates of only NPCs above a certain rarity
 - A random mode, where spawn rates are randomized upon the start of every new day.
 - Any other suggestions as commented in Github or the Steam Workshop Page.
