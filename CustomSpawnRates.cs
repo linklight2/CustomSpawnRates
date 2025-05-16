@@ -14,7 +14,7 @@ namespace CustomSpawnRates
         public const bool DefaultDisableOnBoss = false;
     }
 
-    public class GlobalNPCRateModifier : GlobalNPC
+    public class GeneralSpawnRateMultiplier : GlobalNPC
     {
         public bool IsBossActive()
         {
