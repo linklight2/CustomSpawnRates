@@ -4,7 +4,7 @@ Complete with a config that allows you to freely manipulate general spawn rates 
 and by limiting the max spawns avaliable. The spawn rate is not modified at all if the mod isn't in use either, 
 perfect for those who only want to change the spawn rates in certain scenarios.
 
-Steam Workshop Page: aa
+Steam Workshop Page: https://steamcommunity.com/sharedfiles/filedetails/?id=3482260931
 
 Possible Future Mod Additions (according to popular demand):
 - Boosting the spawn rates of only NPCs above a certain rarity
