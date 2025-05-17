@@ -16,12 +16,20 @@ namespace CustomSpawnRates
         [Range(1, 10000)]
         public int SpawnRateDivisor;
 
-        [DefaultValue(CustomSpawnRates.DefaultSpawnMaxMult)]
-        [Range(0f, 1f)]
-        public float SpawnMaxMult;
+        [DefaultValue(CustomSpawnRates.DefaultSpawnRate)]
+        [Range(0, 10000)]
+        public int SpawnRate;
+
+        [DefaultValue(CustomSpawnRates.DefaultMaxSpawnsMultiplier)]
+        [Range(1, 10000)]
+        public int MaxSpawnsMultiplier;
+
+        [DefaultValue(CustomSpawnRates.DefaultMaxSpawnsDivisor)]
+        [Range(1, 10000)]
+        public int MaxSpawnsDivisor;
 
         [DefaultValue(CustomSpawnRates.DefaultMaxSpawns)]
-        [Range(0, 10000)]
+        [Range(-1, 10000)]
         public int MaxSpawns;
 
         [DefaultValue(CustomSpawnRates.DefaultDisableOnBoss)]

@@ -10,9 +10,12 @@ namespace CustomSpawnRates
 	{
         public const int DefaultSpawnRateMultiplier = 1;
         public const int DefaultSpawnRateDivisor = 1;
-        public const float DefaultSpawnMaxMult = 1f;
-        public const int DefaultMaxSpawns = 10000;
+        public const int DefaultMaxSpawnsMultiplier = 1;
+        public const int DefaultMaxSpawnsDivisor = 1;
+        public const int DefaultMaxSpawns = -1;
+        public const int DefaultSpawnRate = 0;
         public const bool DefaultDisableOnBoss = false;
+        public const bool DefaultDisableCalculateMaxSpawnsWithSpawnRate = false;
     }
 
     public class GeneralSpawnRateMultiplier : GlobalNPC
@@ -90,11 +93,34 @@ namespace CustomSpawnRates
                 return;
             }
 
-            float spawnRateModifier = (float)config.SpawnRateMultiplier / (float)config.SpawnRateDivisor;
-            float trueMaxSpawns = config.MaxSpawns == CustomSpawnRates.DefaultMaxSpawns ? config.MaxSpawns : maxSpawns * spawnRateModifier * config.SpawnMaxMult;
+            float spawnRateModifier = config.SpawnRateMultiplier / (float)config.SpawnRateDivisor;
+            float maxSpawnsModifier = config.MaxSpawnsMultiplier / (float)config.MaxSpawnsDivisor;
+
+            float trueMaxSpawns;
+
+            if (config.MaxSpawns != CustomSpawnRates.DefaultMaxSpawns)
+            {
+                trueMaxSpawns = config.MaxSpawns;
+            }
+            else if (config.SpawnRate != CustomSpawnRates.DefaultSpawnRate || config.DisableCalculateMaxSpawnsWithSpawnRate)
+            {
+                trueMaxSpawns = maxSpawns * maxSpawnsModifier;
+            }
+            else
+            {
+                trueMaxSpawns = maxSpawns * spawnRateModifier * maxSpawnsModifier;
+            }
 
             maxSpawns = (int)trueMaxSpawns;
-            spawnRate = (int)((float)spawnRate / spawnRateModifier);
+
+            if (config.SpawnRate == CustomSpawnRates.DefaultSpawnRate)
+            { 
+                spawnRate = (int)(spawnRate / spawnRateModifier);
+            }
+            else
+            {
+                spawnRate = config.SpawnRate;
+            }
         }
     }
 }

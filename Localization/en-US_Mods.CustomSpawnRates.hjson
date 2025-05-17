@@ -3,12 +3,22 @@ Configs: {
 		DisplayName: Spawn Rates Config
 
 		SpawnRateMultiplier: {
-			Tooltip: Multiplies the current spawn rate by X amount.
+			Tooltip:
+				'''
+				Multiplies the current spawn rate and max spawns by X amount.
+				The spawn rate modifier will be calculated like so: SpawnRateMultiplier / SpawnRateDivisor
+				This only applies during calculation; it will not be used if "Spawn Rate" is set to a value.
+				'''
 			Label: Spawn Rate Multiplier
 		}
 
 		SpawnRateDivisor: {
-			Tooltip: Divides the current spawn rate by X amount.
+			Tooltip:
+				'''
+				Divides the current spawn rate and max spawns by X amount.
+				The spawn rate modifier will be calculated like so: SpawnRateMultiplier / SpawnRateDivisor
+				This only applies during calculation; it will not be used if "Spawn Rate" is set to a value.
+				'''
 			Label: Spawn Rate Divisor
 		}
 
@@ -17,28 +27,62 @@ Configs: {
 			Label: Disable On Boss?
 		}
 
+		DisableCalculateMaxSpawnsWithSpawnRate: {
+			Tooltip:
+				'''
+				Turn on to only use the max spawn multiplier and divisor when deciding max spawns rather than also using the spawn rate.
+				This simplifies the formula used to: OriginalMaxSpawns * MaxSpawnsMultiplier / MaxSpawnsDivisor
+				This only applies during calculation; it will not be used if "Max Spawns" is set to a value.
+				This is automatically applied if "Spawn Rate" is set to a hard value with the config as well.
+				'''
+			Label: Disable Calculated Spawn Rate Influence On Max Spawns
+		}
+
 		MaxSpawns: {
 			Label: Max Spawns
 			Tooltip:
 				'''
 				Sets the max amount of spawns around each player. 
-				Set this if you want to limit the max spawns to a hard value rather than have it calculated.
+				Set this if you want to limit the max spawns to a hard value rather than have it calculated based off your original max spawns.
+				If this is set to a value other than the default, this disables the max spawns multiplier and divisor.
 				'''
 		}
 
-		SpawnMaxMult: {
+		SpawnRate: {
+			Label: Spawn Rate
+			Tooltip:
+				'''
+				Directly sets the spawn rate around the player. This affects the actual spawn rate observed in game inversely.
+				(1 = The maximum valid spawn rate: something will spawn every single tick as long as activeSpawns < maxSpawns)
+				(10000 = There is a 1 in 10000 chance for something to spawn every tick)
+				Set this if you want to set the spawn rate to a hard value rather than have it calculated based off your original spawn rate.
+
+				'''
+		}
+
+		MaxSpawnsMultiplier: {
 			Label: Max Spawns Multiplier
 			Tooltip:
 				'''
-				This value is used to better control the max amount of spawns near the player.
-				The max spawns will be calculated like so: OriginalMaxSpawns * SpawnRate * MaxSpawnsMultiplier
+				Multiplies the calculated max spawns by X amount.
+				The max spawns will be calculated like so: OriginalMaxSpawns * SpawnRateMultiplier / SpawnRateDivisor * MaxSpawnsMultiplier / MaxSpawnsDivisor
+				This only applies during calculation; it will not be used if "Max Spawns" is set to a value.
+				'''
+		}
+
+		MaxSpawnsDivisor: {
+			Label: Max Spawns Divisor
+			Tooltip:
+				'''
+				Divides the calculated max spawns by X amount.
+				The max spawns will be calculated like so: OriginalMaxSpawns * SpawnRateMultiplier / SpawnRateDivisor * MaxSpawnsMultiplier / MaxSpawnsDivisor
 				This only applies during calculation; it will not be used if "Max Spawns" is set to a value.
 				'''
 		}
 
 		DebugMode: {
 			Label: Debug Mode
-			Tooltip: ""
+			Tooltip: For troubleshooting only.
 		}
 	}
 }
