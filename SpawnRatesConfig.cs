@@ -32,6 +32,9 @@ namespace CustomSpawnRates
         [Range(-1, 10000)]
         public int MaxSpawns;
 
+        [DefaultValue(CustomSpawnRates.DefaultDisableCalculateMaxSpawnsWithSpawnRate)]
+        public bool DisableCalculateMaxSpawnsWithSpawnRate;
+
         [DefaultValue(CustomSpawnRates.DefaultDisableOnBoss)]
         public bool DisableOnBoss;
 
