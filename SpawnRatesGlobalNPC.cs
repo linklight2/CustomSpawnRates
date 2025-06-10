@@ -64,7 +64,6 @@ namespace CustomSpawnRates
         }
 
         // This only works for modded NPCs, no effect on vanilla NPCs
-        /*
         public override void EditSpawnPool(IDictionary<int, float> pool, NPCSpawnInfo spawnInfo)
         {
             SpawnRatesConfig config = ModContent.GetInstance<SpawnRatesConfig>();
@@ -77,7 +76,6 @@ namespace CustomSpawnRates
                 int npcType = kvp.Key;
                 if (npcType == 0) // This is a vanilla npc so it should be handled by another function
                     continue;
-
 
                 float spawnChance = kvp.Value;
 
@@ -96,6 +94,5 @@ namespace CustomSpawnRates
             foreach (int npcType in npcToRemove)
                 pool.Remove(npcType);
         }
-        */
     }
 }
