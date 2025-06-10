@@ -1,12 +1,18 @@
 # CustomSpawnRates
+
 Custom Spawn Rates is a simple mod that lets you customize spawn rates of enemies.
-Complete with a config that allows you to freely manipulate general spawn rates by raising or lowering it, 
-and by limiting the max spawns avaliable. The spawn rate is not modified at all if the mod isn't in use either, 
-perfect for those who only want to change the spawn rates in certain scenarios.
+Complete with a config that allows you to freely manipulate general spawn rates by raising, lowering and limiting the max spawns available. 
+The spawn rate is not modified at all if the mod isn't in use either, perfect for those who only want to change the spawn rates in certain scenarios.
+You may also only spawn NPCs by rarity. Looking for the ever elusive Stylist? Trying to spawn a Mimic? Try this option out by raising or lowering the rarity.
+
+**Disclaimer** 
+Max spawns in Terraria are hard coded to a limit of 200. All vanilla code expects this limit, so my mod uses it too for compatibility.
+Lots of Rare Spawns are mostly influenced by player luck after the spawn rate is capped out at once per tick. 
+I have hacked it in a way where the rare spawn rate increases if you set the minimum rarity in the config + spawn rate higher, but the max spawn rate for said spawns is 20x.
+Going even higher would either be a lot of work or slow down the mod too much.
+
+[h2] Possible Future Mod Additions (according to popular demand): [/h2]
+- Boosting the spawn rates of only NPCs above a certain rarity (DONE!)
+- Any other suggestions as commented in Github or My Discord: https://discord.gg/krZV4fCWqV
 
 Steam Workshop Page: https://steamcommunity.com/sharedfiles/filedetails/?id=3482260931
-
-Possible Future Mod Additions (according to popular demand):
-- Boosting the spawn rates of only NPCs above a certain rarity
-- A random mode, where spawn rates are randomized upon the start of every new day.
-- Any other suggestions as commented in Github or the Steam Workshop Page.

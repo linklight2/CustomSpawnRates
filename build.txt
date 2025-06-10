@@ -1,3 +1,4 @@
 displayName = Custom Spawn Rates
 author = Linklight2
-version = 1.6
+version = 1.7
+includeSource = true

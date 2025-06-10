@@ -7,7 +7,6 @@ Configs: {
 				'''
 				Multiplies the current spawn rate and max spawns by X amount.
 				The spawn rate modifier will be calculated like so: SpawnRateMultiplier / SpawnRateDivisor
-				This only applies during calculation; it will not be used if "Spawn Rate" is set to a value.
 				'''
 			Label: Spawn Rate Multiplier
 		}
@@ -17,7 +16,6 @@ Configs: {
 				'''
 				Divides the current spawn rate and max spawns by X amount.
 				The spawn rate modifier will be calculated like so: SpawnRateMultiplier / SpawnRateDivisor
-				This only applies during calculation; it will not be used if "Spawn Rate" is set to a value.
 				'''
 			Label: Spawn Rate Divisor
 		}
@@ -27,62 +25,45 @@ Configs: {
 			Label: Disable On Boss?
 		}
 
-		DisableCalculateMaxSpawnsWithSpawnRate: {
-			Tooltip:
-				'''
-				Turn on to only use the max spawn multiplier and divisor when deciding max spawns rather than also using the spawn rate.
-				This simplifies the formula used to: OriginalMaxSpawns * MaxSpawnsMultiplier / MaxSpawnsDivisor
-				This only applies during calculation; it will not be used if "Max Spawns" is set to a value.
-				This is automatically applied if "Spawn Rate" is set to a hard value with the config as well.
-				'''
-			Label: Disable Calculated Spawn Rate Influence On Max Spawns
-		}
-
 		MaxSpawns: {
 			Label: Max Spawns
 			Tooltip:
 				'''
-				Sets the max amount of spawns around each player. 
-				Set this if you want to limit the max spawns to a hard value rather than have it calculated based off your original max spawns.
-				If this is set to a value other than the default, this disables the max spawns multiplier and divisor.
+				Range -1 to 200
+				Sets the max amount of spawns around each player. A value of 0 means nothing will spawn.
+				A value of -1 means this variable is automatically calculated by your spawn rate modifiers.
+				Set this if you don't want your max spawns calculated based off your original max spawns and the current spawn rate.
+				Vanilla terraria hard-limits this to 200 - No more NPCs can be in the world at once.
 				'''
 		}
 
-		SpawnRate: {
-			Label: Spawn Rate
+		Headers: {
+			SpawnRate_Options: Default Options
+			Advanced-Options: Advanced Options
+		}
+
+		MinRarityToSpawn: {
+			Label: Minimum Rarity To Spawn
 			Tooltip:
 				'''
-				Directly sets the spawn rate around the player. This affects the actual spawn rate observed in game inversely.
-				(1 = The maximum valid spawn rate: something will spawn every single tick as long as activeSpawns < maxSpawns)
-				(10000 = There is a 1 in 10000 chance for something to spawn every tick)
-				Set this if you want to set the spawn rate to a hard value rather than have it calculated based off your original spawn rate.
-
+				The minimum rarity an NPC has to have to be able to spawn. If you set this to 0 anything can spawn. 
+				0 - Default rarity. Unless it was manually set to be higher this is what the NPC will use.
+				1 - Used for slightly rarer but less valuable NPCs. This includes Undead Miners, Dungeon Slimes, Bound Town NPCs, etc.
+				2 - Used for generally rarer NPCs. This includes Pinky, The Groom, The Paladin, etc.
+				3 - Used mostly for golden critters. Extremely rare that spawn once on a blue moon.
+				4 - Standard Mimics. Ice mimics, Golden Mimics, etc.
+				5 - Biome mimics like Corrupt Mimics or Hallow Mimics. This is the highest rarity used in vanilla.
 				'''
 		}
 
-		MaxSpawnsMultiplier: {
-			Label: Max Spawns Multiplier
+		MaxRarityToSpawn: {
+			Label: Maximum Rarity To Spawn
 			Tooltip:
 				'''
-				Multiplies the calculated max spawns by X amount.
-				The max spawns will be calculated like so: OriginalMaxSpawns * SpawnRateMultiplier / SpawnRateDivisor * MaxSpawnsMultiplier / MaxSpawnsDivisor
-				This only applies during calculation; it will not be used if "Max Spawns" is set to a value.
+				The maximum rarity an NPC has to have to be able to spawn. If this is lower than the minimum it will be disabled.
+				-1 - This config option is disabled.
+				See minimum rarity for an explaination of how different rarities are used in Vanilla.
 				'''
-		}
-
-		MaxSpawnsDivisor: {
-			Label: Max Spawns Divisor
-			Tooltip:
-				'''
-				Divides the calculated max spawns by X amount.
-				The max spawns will be calculated like so: OriginalMaxSpawns * SpawnRateMultiplier / SpawnRateDivisor * MaxSpawnsMultiplier / MaxSpawnsDivisor
-				This only applies during calculation; it will not be used if "Max Spawns" is set to a value.
-				'''
-		}
-
-		DebugMode: {
-			Label: Debug Mode
-			Tooltip: For troubleshooting only.
 		}
 	}
 }

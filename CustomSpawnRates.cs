@@ -1,11 +1,29 @@
 using System;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.ID;
 using Terraria.ModLoader;
+using tModPorter;
+using Microsoft.Xna.Framework;
 
 namespace CustomSpawnRates
 {
-	// Please read https://github.com/tModLoader/tModLoader/wiki/Basic-tModLoader-Modding-Guide#mod-skeleton-contents for more information about the various files in a mod.
+	public struct NPCPotentialDespawnInfo
+    {
+        public NPC npc;
+        public float spawnX;
+        public float spawnY;
+        public int timeLeft;
+        public NPCPotentialDespawnInfo(NPC npc, float spawnX, float spawnY, int timeLeft)
+        {
+            this.npc = npc;
+            this.spawnX = spawnX;
+            this.spawnY = spawnY;
+            this.timeLeft = timeLeft;
+        }
+    }
 	public class CustomSpawnRates : Mod
 	{
         public const int DefaultSpawnRateMultiplier = 1;
@@ -14,113 +32,105 @@ namespace CustomSpawnRates
         public const int DefaultMaxSpawnsDivisor = 1;
         public const int DefaultMaxSpawns = -1;
         public const int DefaultSpawnRate = 0;
+        public const int DefaultMinimumRarityToSpawn = 0;
+        public const int DefaultMaximumRarityToSpawn = -1;
         public const bool DefaultDisableOnBoss = false;
-        public const bool DefaultDisableCalculateMaxSpawnsWithSpawnRate = false;
-    }
+        public static readonly Vector2 despawnPosition = new Vector2(1, 1);
+        public static On_NPC.orig_SpawnNPC TerrariaSpawnNPC;
+        private static List<NPCPotentialDespawnInfo> potentialDespawns = new List<NPCPotentialDespawnInfo>();
 
-    public class GeneralSpawnRateMultiplier : GlobalNPC
-    {
-        public static int bossActive = 0;
-        public static int npcActive = 0;
-        public override void OnSpawn(NPC npc, IEntitySource source)
+        public override void Load()
         {
-            if (Main.netMode != Terraria.ID.NetmodeID.Server)
-                return;
-
-            npcActive++;
-            if (npc.boss)
-                bossActive++;
+            // This hook breaks after it's called too many times and no longer calls the modified spawn function
+            // The only use of it is to store the orig as our own static hook to call the function ourselves.
+            On_NPC.SpawnNPC += SpawnNPC;
+            On_NPC.NewNPC += CorrectlyTrackWhoAmI;
+            // Because of this hook's proximity after spawn NPC and the fact that its called from single player or server only code
+            // It was a prime point to insert the modified SpawnNPC code
+            On_PressurePlateHelper.Update += DespawnCommonNPCs;
         }
-
-        public override void OnKill(NPC npc)
+        public static void AddNPCPotentialDespawn(NPC npcToAdd)
         {
-            if (Main.netMode != Terraria.ID.NetmodeID.Server)
-                return;
+            // Flag NPC for despawn
+            potentialDespawns.Add(new NPCPotentialDespawnInfo(npcToAdd, npcToAdd.position.X, npcToAdd.position.Y, npcToAdd.timeLeft));
 
-            npcActive--;
-            if (npc.boss)
-                bossActive--;
-
-            // Only Debug code from this point onwards
-            if (!ModContent.GetInstance<SpawnRatesConfig>().DebugMode)
-                return;
-
-            int currentBossActiveCount = 0;
-            int currentNpcActiveCount = 0;
-
-            foreach (NPC activeNpc in Main.ActiveNPCs)
+            // Immediately move the NPC far off screen to wait for handler code
+            if (npcToAdd.position.Distance(despawnPosition) < Main.offScreenRange * 5)
             {
-                currentBossActiveCount++;
-                if (activeNpc.boss)
-                    currentBossActiveCount++;
+                npcToAdd.position.X += 10000;
+            }
+            else
+            {
+                npcToAdd.position.X = despawnPosition.X;
+                npcToAdd.position.Y = despawnPosition.Y;
             }
 
-            if (currentBossActiveCount != bossActive)
+            npcToAdd.timeLeft = 0;
+            npcToAdd.active = false;
+        }
+
+        // Temporarily holds the place of potentially despawnable NPCs, stopping them from getting overwritten before they are rarity checked.
+        internal static int CorrectlyTrackWhoAmI(On_NPC.orig_NewNPC orig, IEntitySource source, int X, int Y, int Type, int Start = 0, float ai0 = 0f, float ai1 = 0f, float ai2 = 0f, float ai3 = 0f, int Target = 255)
+        {
+            int size = potentialDespawns.Count;
+            int modStart = Start;
+
+            if (source is EntitySource_SpawnNPC && size > 0)
             {
-                Main.NewText("bossActive != currentBossActiveCount.", Microsoft.Xna.Framework.Color.Red);
-                bossActive = currentBossActiveCount;
+                // Look at the end of the list first
+                modStart = potentialDespawns[size - 1].npc.whoAmI + 1;
             }
 
-            if (currentNpcActiveCount != npcActive)
-            {
-                Main.NewText("bossActive != currentBossActiveCount.", Microsoft.Xna.Framework.Color.White);
-                npcActive = currentNpcActiveCount;
-            }
+            return orig(source, X, Y, Type, modStart, ai0, ai1, ai2, ai3, Target);
         }
-        public bool IsBossActive()
+
+        // The hook keeps breaking for some reason, calling it indirectly instead
+        internal static void SpawnNPC(On_NPC.orig_SpawnNPC orig)
         {
-            return bossActive > 0;
+            TerrariaSpawnNPC ??= orig;
+            TerrariaSpawnNPC();
         }
-        public override void EditSpawnRate(Player player, ref int spawnRate, ref int maxSpawns)
+
+        // Despawn any NPCs not of the specified rarity. 
+        // Repeat the Spawn NPC function up to the ceiling of Log2(configSpawnRate * 10) times if commons are disabled.
+        // This is to artificially increase the likelyhood of getting a luckbased rare NPC to spawn by the user-set spawn rate without being too in-efficient.
+        internal static void DespawnCommonNPCs(On_PressurePlateHelper.orig_Update orig)
         {
             SpawnRatesConfig config = ModContent.GetInstance<SpawnRatesConfig>();
 
-            // If the User is not actively using the mod, disable it
-            // Changed math formulas to leave the spawn rate and max spawns unmodified if at default values,
-            // So this if statement is not needed for now.
-            /*
-            if (config.SpawnRateMultiplier == CustomSpawnRates.DefaultSpawnRateMultiplier && 
-                config.SpawnRateDivisor == CustomSpawnRates.DefaultSpawnRateDivisor && 
-                config.MaxSpawns == CustomSpawnRates.DefaultMaxSpawns &&
-                config.SpawnMaxMult == CustomSpawnRates.DefaultSpawnMaxMult)
-            {
-                return;
-            }
-            */
+            float spawnRateModifier = config.SpawnRateMultiplier / config.SpawnRateDivisor;
+            int retryMax = (int)Math.Max(1, Math.Ceiling(Math.Log2(spawnRateModifier * spawnRateModifier)));
+            bool maxDisabled = config.MaxRarityToSpawn < config.MinRarityToSpawn;
 
-            if (config.DisableOnBoss && IsBossActive())
-            {
-                return;
-            }
+            // Main.NewText(Main.npc.Length.ToString());
 
-            float spawnRateModifier = config.SpawnRateMultiplier / (float)config.SpawnRateDivisor;
-            float maxSpawnsModifier = config.MaxSpawnsMultiplier / (float)config.MaxSpawnsDivisor;
+            for (int retryCount = 0; retryCount < retryMax; retryCount++)
+            {
+                foreach (var info in potentialDespawns)
+                {
+                    bool shouldDespawn = info.npc.rarity < config.MinRarityToSpawn;
+                    shouldDespawn = shouldDespawn || (!maxDisabled && info.npc.rarity > config.MaxRarityToSpawn);
 
-            float trueMaxSpawns;
+                    if (!shouldDespawn)
+                    {
+                        // Moves the NPC back to the correct spawn position
+                        info.npc.active = true;
+                        info.npc.timeLeft = info.timeLeft;
+                        info.npc.position.X = info.spawnX;
+                        info.npc.position.Y = info.spawnY;
+                    }
+                }
 
-            if (config.MaxSpawns != CustomSpawnRates.DefaultMaxSpawns)
-            {
-                trueMaxSpawns = config.MaxSpawns;
-            }
-            else if (config.SpawnRate != CustomSpawnRates.DefaultSpawnRate || config.DisableCalculateMaxSpawnsWithSpawnRate)
-            {
-                trueMaxSpawns = maxSpawns * maxSpawnsModifier;
-            }
-            else
-            {
-                trueMaxSpawns = maxSpawns * spawnRateModifier * maxSpawnsModifier;
+                potentialDespawns.Clear();
+
+                // Only call SpawnNPC() if SpawnNPC hasn't already been called
+                // Only call SpawnNPC() if the minimum rarity is not 0 (so we dont artificially boost commons)
+                // This is to artificially boost the spawn rates of luck-based NPCs mostly unaffected by the general spawn rate.
+                if (retryCount > 0 && config.MinRarityToSpawn > 0)
+                    TerrariaSpawnNPC();
             }
 
-            maxSpawns = (int)trueMaxSpawns;
-
-            if (config.SpawnRate == CustomSpawnRates.DefaultSpawnRate)
-            { 
-                spawnRate = (int)(spawnRate / spawnRateModifier);
-            }
-            else
-            {
-                spawnRate = config.SpawnRate;
-            }
+            orig();
         }
     }
 }
